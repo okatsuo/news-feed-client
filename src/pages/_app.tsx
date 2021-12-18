@@ -16,7 +16,7 @@ function MyApp({ Component, emotionCache = clientSideEmotionCache, pageProps }: 
   return (
     <CacheProvider value={emotionCache}>
       <Head>
-        <title>Change title in _app.tsx</title>
+        <title>News Feed</title>
         <meta name="viewport" content="initial-scale=1, width=device-width" />
       </Head>
       <ThemeProvider theme={theme}>
