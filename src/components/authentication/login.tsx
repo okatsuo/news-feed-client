@@ -2,11 +2,8 @@ import { EmailOutlined, Facebook, GitHub, Google, LockOutlined } from '@mui/icon
 import { LoadingButton } from '@mui/lab'
 import { Box, IconButton, InputAdornment, TextField, Tooltip, Typography } from '@mui/material'
 import { Form, Formik } from 'formik'
-import { useState } from 'react'
-import { apolloClient } from '../../graphql/client'
-import { QUERY_LOGIN } from '../../graphql/query/user/login'
-import { UserLogin } from '../../graphql/types/login'
-import { AppStorage } from '../../utils/appStorages'
+import { useContext, useState } from 'react'
+import { AuthenticationContext } from '../../context/authentication'
 
 const initialValues = {
   email: '',
@@ -15,14 +12,11 @@ const initialValues = {
 
 export const Login = () => {
   const [loading, setLoading] = useState<boolean>(false)
+  const { signIn } = useContext(AuthenticationContext)
   const handleSubmit = async (values: typeof initialValues) => {
     try {
       setLoading(true)
-      const { data: { login } } = await apolloClient.query<{ login: UserLogin }>({
-        query: QUERY_LOGIN,
-        variables: values
-      })
-      localStorage.setItem(AppStorage.user_token, login.token)
+      await signIn(values)
       setLoading(false)
     } catch (error) {
       setLoading(false)

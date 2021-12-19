@@ -5,6 +5,7 @@ import createEmotionCache from '../utils/createEmotionCache';
 import Head from 'next/head';
 import theme from '../styles/theme';
 import { CssBaseline, ThemeProvider } from '@mui/material';
+import { GlobalContextProvider } from '../context/globalContextProvider';
 
 const clientSideEmotionCache = createEmotionCache();
 interface MyAppProps extends AppProps {
@@ -20,7 +21,9 @@ function MyApp({ Component, emotionCache = clientSideEmotionCache, pageProps }: 
       </Head>
       <ThemeProvider theme={theme}>
         <CssBaseline />
-        <Component {...pageProps} />
+        <GlobalContextProvider>
+          <Component {...pageProps} />
+        </GlobalContextProvider>
       </ThemeProvider>
     </CacheProvider>
   )
