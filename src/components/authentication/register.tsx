@@ -1,8 +1,12 @@
 import { EmailOutlined, Facebook, GitHub, Google, LockOutlined, PersonOutline } from '@mui/icons-material'
-import { Box, Button, IconButton, InputAdornment, TextField, Tooltip, Typography } from '@mui/material'
+import { LoadingButton } from '@mui/lab'
+import { Box, IconButton, InputAdornment, TextField, Tooltip, Typography } from '@mui/material'
 import { Form, Formik } from 'formik'
+import Router from 'next/router'
+import { useState } from 'react'
 import { apolloClient } from '../../graphql/client'
 import { MUTATION_USER_CREATE } from '../../graphql/mutation/user-create'
+import { AppRoutes } from '../../utils/appRoutes'
 
 const initialValues = {
   email: '',
@@ -11,14 +15,18 @@ const initialValues = {
 }
 
 export const Register = () => {
+  const [loading, setLoading] = useState<boolean>(false)
   const handleSubmit = async (values: any) => {
     try {
+      setLoading(true)
       const { data } = await apolloClient.mutate({
         mutation: MUTATION_USER_CREATE,
         variables: values
       })
-      console.log('data:', data)
+      setLoading(false)
+      Router.push(AppRoutes.home)
     } catch (error) {
+      setLoading(false)
       console.error(error)
     }
   }
@@ -106,10 +114,13 @@ export const Register = () => {
                   ),
                 }}
               />
-
-              <Button variant='contained' type='submit'>
+              <LoadingButton
+                loading={loading}
+                variant='contained'
+                type='submit'
+              >
                 REGISTRAR
-              </Button>
+              </LoadingButton>
             </Box>
           </Form>
         )}
