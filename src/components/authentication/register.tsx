@@ -16,7 +16,8 @@ const initialValues = {
 
 export const Register = () => {
   const [loading, setLoading] = useState<boolean>(false)
-  const handleSubmit = async (values: any) => {
+  const handleSubmit = async (values: typeof initialValues) => {
+    console.log(values)
     try {
       setLoading(true)
       const { data } = await apolloClient.mutate({
@@ -62,7 +63,7 @@ export const Register = () => {
       <Typography variant='body2'>ou inscreva-se com teu email</Typography>
       <Formik
         initialValues={initialValues}
-        onSubmit={(values) => handleSubmit(values)}
+        onSubmit={handleSubmit}
       >
         {({ handleChange }) => (
           <Form>
