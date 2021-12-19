@@ -6,6 +6,8 @@ import Head from 'next/head';
 import theme from '../styles/theme';
 import { CssBaseline, ThemeProvider } from '@mui/material';
 import { GlobalContextProvider } from '../context/globalContextProvider';
+import { ApolloProvider } from '@apollo/client';
+import { apolloClient } from '../graphql/client';
 
 const clientSideEmotionCache = createEmotionCache();
 interface MyAppProps extends AppProps {
@@ -22,7 +24,9 @@ function MyApp({ Component, emotionCache = clientSideEmotionCache, pageProps }: 
       <ThemeProvider theme={theme}>
         <CssBaseline />
         <GlobalContextProvider>
-          <Component {...pageProps} />
+          <ApolloProvider client={apolloClient}>
+            <Component {...pageProps} />
+          </ApolloProvider>
         </GlobalContextProvider>
       </ThemeProvider>
     </CacheProvider>
