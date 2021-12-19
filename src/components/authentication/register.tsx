@@ -1,7 +1,27 @@
 import { EmailOutlined, Facebook, GitHub, Google, LockOutlined, PersonOutline } from '@mui/icons-material'
 import { Box, Button, IconButton, InputAdornment, TextField, Tooltip, Typography } from '@mui/material'
+import { Form, Formik } from 'formik'
+import { apolloClient } from '../../graphql/client'
+import { MUTATION_USER_CREATE } from '../../graphql/mutation/user-create'
+
+const initialValues = {
+  email: '',
+  password: '',
+  name: ''
+}
 
 export const Register = () => {
+  const handleSubmit = async (values: any) => {
+    try {
+      const { data } = await apolloClient.mutate({
+        mutation: MUTATION_USER_CREATE,
+        variables: values
+      })
+      console.log('data:', data)
+    } catch (error) {
+      console.error(error)
+    }
+  }
   return (
     <Box sx={{
       height: '100vh',
@@ -32,52 +52,68 @@ export const Register = () => {
         </IconButton>
       </Box>
       <Typography variant='body2'>ou inscreva-se com teu email</Typography>
-      <form>
-        <Box sx={{ display: 'flex', flexDirection: 'column', width: '300px' }}>
-          <TextField
-            placeholder='Nome'
-            type='text'
-            margin='normal'
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position='start'>
-                  <PersonOutline />
-                </InputAdornment>
-              )
-            }}
-          />
+      <Formik
+        initialValues={initialValues}
+        onSubmit={(values) => handleSubmit(values)}
+      >
+        {({ handleChange }) => (
+          <Form>
+            <Box sx={{ display: 'flex', flexDirection: 'column', width: '300px' }}>
+              <TextField
+                name='name'
+                placeholder='Nome'
+                type='text'
+                margin='normal'
+                onChange={handleChange}
+                required
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position='start'>
+                      <PersonOutline />
+                    </InputAdornment>
+                  )
+                }}
+              />
 
-          <TextField
-            placeholder='Email'
-            type='email'
-            margin='normal'
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position='start'>
-                  <EmailOutlined />
-                </InputAdornment>
-              )
-            }}
-          />
+              <TextField
+                name='email'
+                placeholder='Email'
+                type='email'
+                margin='normal'
+                onChange={handleChange}
+                required
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position='start'>
+                      <EmailOutlined />
+                    </InputAdornment>
+                  )
+                }}
+              />
 
-          <TextField
-            placeholder='Senha'
-            type='password'
-            margin='normal'
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position='start'>
-                  <LockOutlined />
-                </InputAdornment>
-              ),
-            }}
-          />
+              <TextField
+                name='password'
+                placeholder='Senha'
+                type='password'
+                margin='normal'
+                onChange={handleChange}
+                required
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position='start'>
+                      <LockOutlined />
+                    </InputAdornment>
+                  ),
+                }}
+              />
 
-          <Button variant='contained'>
-            REGISTRAR
-          </Button>
-        </Box>
-      </form>
-    </Box>
+              <Button variant='contained' type='submit'>
+                REGISTRAR
+              </Button>
+            </Box>
+          </Form>
+        )}
+      </Formik>
+    </Box >
   )
 }
