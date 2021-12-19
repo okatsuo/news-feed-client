@@ -26,7 +26,7 @@ export const Register = () => {
           </Tooltip>
         </IconButton>
         <IconButton>
-          <Tooltip title='Entrar com o GitHUB (não ativado ainda)'>
+          <Tooltip title='Entrar com o GitHub (não ativado ainda)'>
             <GitHub />
           </Tooltip>
         </IconButton>
