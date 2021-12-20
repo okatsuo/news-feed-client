@@ -2,14 +2,33 @@ import { useQuery } from '@apollo/client'
 import { Send } from '@mui/icons-material'
 import { InputAdornment, Paper, Stack, TextField, Typography } from '@mui/material'
 import { Box } from '@mui/system'
-import { useContext } from 'react'
+import { useContext, useState } from 'react'
 import { AuthenticationContext } from '../../context/authentication'
+import { apolloClient } from '../../graphql/client'
+import { MUTATION_POST_CREATE } from '../../graphql/mutation/post-create'
 import { QUERY_ALL_POSTS } from '../../graphql/query/post/posts'
 import { Post } from '../../graphql/types/post'
 
 export const Home = () => {
+  const [newPost, setNewPost] = useState<string>('')
   const { loggedUser } = useContext(AuthenticationContext)
-  const { data } = useQuery<{ posts: Post[] }>(QUERY_ALL_POSTS)
+  const { data, refetch } = useQuery<{ posts: Post[] }>(QUERY_ALL_POSTS)
+  const handleSubmit = async () => {
+    if (!newPost) return
+    try {
+      const { data } = await apolloClient.mutate({
+        mutation: MUTATION_POST_CREATE,
+        variables: {
+          userId: loggedUser?.id,
+          text: newPost
+        }
+      })
+      // TODO study efficient way to work with cache to not refetch all data
+      refetch()
+    } catch (error) {
+      console.error(error)
+    }
+  }
   return (
     <Box
       display={'flex'}
@@ -26,6 +45,8 @@ export const Home = () => {
             size='small'
             placeholder={`No que você está pensando hoje ? ${loggedUser?.name}`}
             fullWidth
+            onChange={({ target }) => setNewPost(target.value)}
+            onKeyUp={({ key }) => key === 'Enter' && handleSubmit()}
             InputProps={{
               endAdornment: (
                 <InputAdornment position='end'>
