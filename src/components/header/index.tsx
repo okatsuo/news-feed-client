@@ -23,7 +23,7 @@ export const Navbar = () => {
               News Feed
             </Box>
             <Box textAlign='right' display={'flex'} alignItems={'center'}>
-              <Box mr={2}>
+              <Box mr={0.5}>
                 <Typography>{loggedUser?.name}</Typography>
                 <Typography variant='subtitle2'>{loggedUser?.email}</Typography>
               </Box >
