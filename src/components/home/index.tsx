@@ -24,6 +24,7 @@ export const Home = () => {
         }
       })
       // TODO study efficient way to work with cache to not refetch all data
+      setNewPost('')
       refetch()
     } catch (error) {
       console.error(error)
@@ -40,6 +41,7 @@ export const Home = () => {
         <Paper elevation={3} sx={{ py: 1, px: 1, mb: 2 }} square>
           <Typography variant='subtitle2'>Compartilhe com o mundo</Typography>
           <TextField
+            value={newPost}
             type='text'
             margin='dense'
             size='small'
