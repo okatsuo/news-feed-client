@@ -19,6 +19,7 @@ type AuthenticationContextProps = {
   loggedUser: User | null
   authenticationLoading: boolean
   signIn: (values: UserAuthentication) => Promise<void>
+  logout: () => void
 }
 
 export const AuthenticationContext = createContext<AuthenticationContextProps>({} as AuthenticationContextProps)
@@ -59,7 +60,8 @@ export const AuthenticationProvider = ({ children }: AuthenticationProviderProps
       value={{
         loggedUser,
         authenticationLoading,
-        signIn
+        signIn,
+        logout
       }}>
       {children}
     </AuthenticationContext.Provider>
