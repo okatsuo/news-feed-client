@@ -1,6 +1,7 @@
-import { createContext, ReactNode, useState } from 'react';
+import { createContext, ReactNode, useEffect, useState } from 'react';
 import { apolloClient } from '../../graphql/client';
 import { QUERY_LOGIN } from '../../graphql/query/user/login';
+import { QUERY_USER_PROFILE } from '../../graphql/query/user/user-profile';
 import { UserLogin } from '../../graphql/types/login';
 import { User } from '../../graphql/types/user';
 import { AppStorage } from '../../utils/appStorages';
@@ -25,6 +26,24 @@ export const AuthenticationContext = createContext<AuthenticationContextProps>({
 export const AuthenticationProvider = ({ children }: AuthenticationProviderProps) => {
   const [loggedUser, setLoggedUser] = useState<User | null>(null)
   const [authenticationLoading, setAuthenticationLoading] = useState<boolean>(false)
+
+  useEffect(() => {
+    const userToken = localStorage.getItem(AppStorage.user_token)
+    if (!userToken) return logout()
+
+    apolloClient.query<{ userProfile: User }>({
+      query: QUERY_USER_PROFILE,
+      variables: { userToken }
+    })
+      .then(({ data }) => setLoggedUser(data.userProfile))
+      .catch(() => logout())
+  }, [])
+
+  const logout = () => {
+    localStorage.removeItem(AppStorage.user_token)
+    setLoggedUser(null)
+  }
+
   const signIn = async (values: UserAuthentication) => {
     setAuthenticationLoading(true)
     const { data: { login } } = await apolloClient.query<{ login: UserLogin }>({
