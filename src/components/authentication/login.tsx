@@ -17,7 +17,7 @@ export const Login = () => {
     try {
       setLoading(true)
       await signIn(values)
-      setLoading(false)
+      return setLoading(false)
     } catch (error) {
       setLoading(false)
       console.error(error)
