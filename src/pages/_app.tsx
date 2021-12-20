@@ -4,7 +4,7 @@ import { CacheProvider, EmotionCache } from '@emotion/react'
 import createEmotionCache from '../utils/createEmotionCache';
 import Head from 'next/head';
 import theme from '../styles/theme';
-import { CssBaseline, ThemeProvider } from '@mui/material';
+import { CssBaseline, NoSsr, ThemeProvider } from '@mui/material';
 import { GlobalContextProvider } from '../context/globalContextProvider';
 import { ApolloProvider } from '@apollo/client';
 import { apolloClient } from '../graphql/client';
@@ -25,7 +25,9 @@ function MyApp({ Component, emotionCache = clientSideEmotionCache, pageProps }: 
         <CssBaseline />
         <GlobalContextProvider>
           <ApolloProvider client={apolloClient}>
-            <Component {...pageProps} />
+            <NoSsr>
+              <Component {...pageProps} />
+            </NoSsr>
           </ApolloProvider>
         </GlobalContextProvider>
       </ThemeProvider>

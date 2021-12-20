@@ -20,6 +20,7 @@ type AuthenticationContextProps = {
   authenticationLoading: boolean
   signIn: (values: UserAuthentication) => Promise<void>
   logout: () => void
+  hasToken: () => boolean
 }
 
 export const AuthenticationContext = createContext<AuthenticationContextProps>({} as AuthenticationContextProps)
@@ -29,6 +30,7 @@ export const AuthenticationProvider = ({ children }: AuthenticationProviderProps
   const [authenticationLoading, setAuthenticationLoading] = useState<boolean>(false)
 
   useEffect(() => {
+    setAuthenticationLoading(true)
     const userToken = localStorage.getItem(AppStorage.user_token)
     if (!userToken) return logout()
 
@@ -36,8 +38,14 @@ export const AuthenticationProvider = ({ children }: AuthenticationProviderProps
       query: QUERY_USER_PROFILE,
       variables: { userToken }
     })
-      .then(({ data }) => setLoggedUser(data.userProfile))
-      .catch(() => logout())
+      .then(({ data }) => {
+        setLoggedUser(data.userProfile)
+        setAuthenticationLoading(false)
+      })
+      .catch(() => {
+        logout()
+        setAuthenticationLoading(false)
+      })
   }, [])
 
   const logout = () => {
@@ -46,22 +54,23 @@ export const AuthenticationProvider = ({ children }: AuthenticationProviderProps
   }
 
   const signIn = async (values: UserAuthentication) => {
-    setAuthenticationLoading(true)
     const { data: { login } } = await apolloClient.query<{ login: UserLogin }>({
       query: QUERY_LOGIN,
       variables: values
     })
     localStorage.setItem(AppStorage.user_token, login.token)
     setLoggedUser(login.user)
-    setAuthenticationLoading(false)
   }
+
+  const hasToken = (): boolean => !!localStorage.getItem(AppStorage.user_token)
   return (
     <AuthenticationContext.Provider
       value={{
         loggedUser,
         authenticationLoading,
         signIn,
-        logout
+        logout,
+        hasToken
       }}>
       {children}
     </AuthenticationContext.Provider>
