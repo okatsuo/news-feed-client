@@ -1,6 +1,6 @@
 import { useQuery } from '@apollo/client'
 import { Send } from '@mui/icons-material'
-import { InputAdornment, Paper, Stack, TextField, Typography } from '@mui/material'
+import { Avatar, InputAdornment, Paper, Stack, TextField, Typography } from '@mui/material'
 import { Box } from '@mui/system'
 import { useContext, useState } from 'react'
 import { AuthenticationContext } from '../../context/authentication'
@@ -64,18 +64,36 @@ export const Home = () => {
         >
           {data?.posts.length ? data.posts.map((post, index: number) => (
             <Paper key={index} variant='outlined' sx={{ width: '100%' }}>
-              <Box px={2} py={1}>
-                <Typography><b>{post.user.name}</b></Typography>
-                <Typography variant='body2'>em: {new Date(post.created_at).toLocaleString()}</Typography>
-                <br />
-                <Typography>{post.text}</Typography>
+              <Box px={2} py={1} >
+                <Box display='flex' flexDirection='row'>
+                  <Avatar>{post.user.name.charAt(0)}</Avatar>
+                  <Box ml={2}>
+                    <Typography>
+                      <b>{post.user.name}</b>
+                    </Typography>
+
+                    <Typography
+                      variant='body2'>
+                      em: {new Date(post.created_at).toLocaleString()}
+                    </Typography>
+                    <br />
+                  </Box>
+                </Box>
+                <Typography>
+                  {post.text}
+                </Typography>
               </Box>
-              {post.imageUrl && <img src={post.imageUrl} alt="" width='100%' property='lazy' />}
+
+
+              {post.imageUrl &&
+                <img src={post.imageUrl} alt="" width='100%' property='lazy' />
+              }
             </Paper>
           )) : (
-            <Typography>Seja o primeiro a publicar 🔥</Typography>
-          )
-          }
+            <Typography>
+              Seja o primeiro a publicar 🔥
+            </Typography>
+          )}
         </Stack >
       </Box>
     </Box>
