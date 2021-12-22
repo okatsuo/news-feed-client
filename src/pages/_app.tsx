@@ -1,10 +1,10 @@
 import '../styles/globals.css'
-import type { AppProps } from 'next/app'
-import { CacheProvider, EmotionCache } from '@emotion/react'
+import { AppProps } from 'next/app';
+import { CacheProvider, EmotionCache, ThemeProvider } from '@emotion/react'
 import createEmotionCache from '../utils/createEmotionCache';
 import Head from 'next/head';
 import theme from '../styles/theme';
-import { CssBaseline, NoSsr, ThemeProvider } from '@mui/material';
+import { CssBaseline, NoSsr } from '@mui/material';
 import { GlobalContextProvider } from '../context/globalContextProvider';
 import { ApolloProvider } from '@apollo/client';
 import { apolloClient } from '../graphql/client';
