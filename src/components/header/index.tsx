@@ -1,7 +1,9 @@
-import { Logout } from '@mui/icons-material'
+import { Logout, PersonOutlined } from '@mui/icons-material'
 import { AppBar, Avatar, Box, Container, IconButton, ListItemIcon, Menu, MenuItem, Toolbar, Typography } from '@mui/material'
+import Router from 'next/router'
 import { useContext, useState } from 'react'
 import { AuthenticationContext } from '../../context/authentication'
+import { AppRoutes } from '../../utils/appRoutes'
 
 export const Navbar = () => {
   const { loggedUser, logout } = useContext(AuthenticationContext)
@@ -19,7 +21,10 @@ export const Navbar = () => {
       <Toolbar>
         <Container>
           <Box display='flex' justifyContent='space-between' alignItems='center'>
-            <Box>
+            <Box
+              sx={{ cursor: 'pointer' }}
+              onClick={() => Router.push(AppRoutes.home)}
+            >
               News Feed
             </Box>
             <Box textAlign='right' display={'flex'} alignItems={'center'}>
@@ -37,7 +42,17 @@ export const Navbar = () => {
             open={open}
             onClose={handleClose}
           >
-            <MenuItem onClick={logout}>
+            <MenuItem
+              onClick={() => Router.push(AppRoutes.myProfile)}
+            >
+              <ListItemIcon>
+                <PersonOutlined fontSize='small' />
+              </ListItemIcon>
+              Meu perfil
+            </MenuItem>
+            <MenuItem
+              onClick={logout}
+            >
               <ListItemIcon>
                 <Logout fontSize='small' />
               </ListItemIcon>

@@ -1,4 +1,5 @@
 export enum AppRoutes {
   home = '/',
-  register = '/registrar'
+  register = '/registrar',
+  myProfile = '/meu-perfil'
 }
