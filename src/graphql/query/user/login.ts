@@ -10,6 +10,7 @@ query Login ($email: String!, $password: String!){
       name
       role
       status
+      picture
       created_at
       updated_at
     }

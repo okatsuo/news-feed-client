@@ -5,6 +5,7 @@ export type Post = {
     user: {
       id: string
       name: string
+      picture: string
     }
     created_at: Date
     updated_at: Date

@@ -8,9 +8,9 @@ query userProfile ($userToken: String!){
     name
     role
     status
+    picture
     created_at
     updated_at
   }
 }
-
 `

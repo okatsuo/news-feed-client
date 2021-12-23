@@ -5,6 +5,10 @@ import { useContext, useState } from 'react'
 import { AuthenticationContext } from '../../context/authentication'
 import { formatDate } from '../../utils/formatDate'
 import * as Yup from 'yup'
+import { apolloClient } from '../../graphql/client'
+import { MUTATION_USER_UPDATE } from '../../graphql/mutation/user-update'
+import Router from 'next/router'
+import { User } from '../../graphql/types/user'
 
 const schema = Yup.object().shape({
   name: Yup.string().required('Nome é necessário')
@@ -12,7 +16,7 @@ const schema = Yup.object().shape({
 
 export const MyProfile = () => {
   const [userPicture, setUserPicture] = useState<{ picture: File, pictureUrl: string } | null>(null)
-  const { loggedUser } = useContext(AuthenticationContext)
+  const { loggedUser, setLoggedUser } = useContext(AuthenticationContext)
 
   if (!loggedUser) return <div>loading</div>;
 
@@ -21,9 +25,27 @@ export const MyProfile = () => {
   }
 
   const handleSubmit = async (values: typeof initialValues) => {
-    console.log('values:', values)
-    console.log('picture:', userPicture)
+    try {
+      const { data } = await apolloClient.mutate<{ userUpdate: User }>({
+        mutation: MUTATION_USER_UPDATE,
+        variables: {
+          userId: loggedUser.id,
+          fields: {
+            ...values,
+            picture: userPicture?.picture
+          }
+        }
+      })
+      data?.userUpdate && setLoggedUser(data.userUpdate)
+    } catch (error) {
+      console.error(error)
+    }
   }
+
+  const handleCancel = () => {
+    Router.reload() // TODO temp action
+  }
+
   return (
     <Box display='flex' justifyContent='center' p={5}>
       <Box sx={{
@@ -69,7 +91,7 @@ export const MyProfile = () => {
               width: '150px',
               height: '150px',
             }}
-            src={userPicture?.pictureUrl || ''}
+            src={userPicture?.pictureUrl || loggedUser.picture || ''}
           />
         </Badge>
         <Box textAlign={'center'}>
@@ -96,7 +118,7 @@ export const MyProfile = () => {
                   fullWidth
                 />
                 <Box display='flex' justifyContent='space-evenly' mt={1}>
-                  <Button color='error' variant='contained'>Cancelar</Button>
+                  <Button color='error' variant='contained' onClick={handleCancel}>Cancelar</Button>
                   <Button color='primary' variant='contained' type='submit'>Salvar</Button>
                 </Box>
               </Form>

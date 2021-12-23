@@ -1,5 +1,5 @@
 import { Logout, PersonOutlined } from '@mui/icons-material'
-import { AppBar, Avatar, Box, Container, IconButton, ListItemIcon, Menu, MenuItem, Toolbar, Typography } from '@mui/material'
+import { AppBar, Avatar, Box, Container, IconButton, ListItemIcon, Menu, MenuItem, Toolbar, Tooltip, Typography } from '@mui/material'
 import Router from 'next/router'
 import { useContext, useState } from 'react'
 import { AuthenticationContext } from '../../context/authentication'
@@ -25,7 +25,9 @@ export const Navbar = () => {
               sx={{ cursor: 'pointer' }}
               onClick={() => Router.push(AppRoutes.home)}
             >
-              News Feed
+              <Tooltip title='Voltar para página principal'>
+                <Typography>News Feed</Typography>
+              </Tooltip>
             </Box>
             <Box textAlign='right' display={'flex'} alignItems={'center'}>
               <Box mr={0.5}>
@@ -33,7 +35,7 @@ export const Navbar = () => {
                 <Typography variant='subtitle2'>{loggedUser?.email}</Typography>
               </Box >
               <IconButton onClick={handleClick}>
-                <Avatar>{loggedUser?.name.charAt(0)}</Avatar>
+                <Avatar src={loggedUser?.picture}>{loggedUser?.name.charAt(0)}</Avatar>
               </IconButton>
             </Box>
           </Box>

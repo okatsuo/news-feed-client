@@ -66,7 +66,7 @@ export const Home = () => {
             <Paper key={index} variant='outlined' sx={{ width: '100%' }}>
               <Box px={2} py={1} >
                 <Box display='flex' flexDirection='row'>
-                  <Avatar>{post.user.name.charAt(0)}</Avatar>
+                  <Avatar src={post.user.picture}>{post.user.name.charAt(0)}</Avatar>
                   <Box ml={2}>
                     <Typography>
                       <b>{post.user.name}</b>
