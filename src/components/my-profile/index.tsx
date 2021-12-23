@@ -14,6 +14,8 @@ const schema = Yup.object().shape({
   name: Yup.string().required('Nome é necessário')
 })
 
+const fiveMegabyteInKilobyte = 5000000
+
 export const MyProfile = () => {
   const [userPicture, setUserPicture] = useState<{ picture: File, pictureUrl: string } | null>(null)
   const { loggedUser, setLoggedUser } = useContext(AuthenticationContext)
@@ -22,6 +24,15 @@ export const MyProfile = () => {
 
   const initialValues = {
     name: loggedUser.name
+  }
+
+  const handleImageChange = (files: FileList) => {
+    const allowedFiles = ['image/png', 'image/jpeg']
+    if (!allowedFiles.includes(files[0].type)) return console.error('Arquivo não permitido')
+    if (files[0].size > fiveMegabyteInKilobyte) return console.error('Foto muito grande, máximo 5 MB.')
+    const picture = files[0]
+    const pictureUrl = URL.createObjectURL(picture)
+    setUserPicture({ picture, pictureUrl })
   }
 
   const handleSubmit = async (values: typeof initialValues) => {
@@ -63,13 +74,10 @@ export const MyProfile = () => {
               <input
                 style={{ display: 'none' }}
                 onChange={({ target }) => {
-                  if (target.files) {
-                    const picture = target.files[0]
-                    const pictureUrl = URL.createObjectURL(picture)
-                    setUserPicture({ picture, pictureUrl })
-                  }
+                  target.files && handleImageChange(target.files)
                 }}
                 type='file'
+                accept='image/x-png, image/jpeg'
               />
               <IconButton
                 component='span'
