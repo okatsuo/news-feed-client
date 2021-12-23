@@ -2,8 +2,10 @@ import { EmailOutlined, Facebook, GitHub, Google, LockOutlined } from '@mui/icon
 import { LoadingButton } from '@mui/lab'
 import { Box, IconButton, InputAdornment, TextField, Tooltip, Typography } from '@mui/material'
 import { Form, Formik } from 'formik'
+import Link from 'next/link'
 import { useContext, useState } from 'react'
 import { AuthenticationContext } from '../../context/authentication'
+import { AppRoutes } from '../../utils/appRoutes'
 
 const initialValues = {
   email: '',
@@ -102,6 +104,11 @@ export const Login = () => {
           </Form>
         )}
       </Formik>
+      <Box>
+        <Typography>
+          Ou crie uma <Link href={AppRoutes.register}>nova conta</Link>.
+        </Typography>
+      </Box>
     </Box >
   )
 }

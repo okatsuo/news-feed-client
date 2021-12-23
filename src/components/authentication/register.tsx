@@ -2,6 +2,7 @@ import { EmailOutlined, Facebook, GitHub, Google, LockOutlined, PersonOutline } 
 import { LoadingButton } from '@mui/lab'
 import { Box, IconButton, InputAdornment, TextField, Tooltip, Typography } from '@mui/material'
 import { Form, Formik } from 'formik'
+import Link from 'next/link'
 import Router from 'next/router'
 import { useState } from 'react'
 import { apolloClient } from '../../graphql/client'
@@ -17,7 +18,6 @@ const initialValues = {
 export const Register = () => {
   const [loading, setLoading] = useState<boolean>(false)
   const handleSubmit = async (values: typeof initialValues) => {
-    console.log(values)
     try {
       setLoading(true)
       const { data } = await apolloClient.mutate({
@@ -126,6 +126,11 @@ export const Register = () => {
           </Form>
         )}
       </Formik>
+      <Box>
+        <Typography>
+          Ou entre com <Link href={AppRoutes.home}>sua conta</Link>.
+        </Typography>
+      </Box>
     </Box >
   )
 }
