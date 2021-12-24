@@ -8,9 +8,11 @@ import { apolloClient } from '../../graphql/client'
 import { MUTATION_POST_CREATE } from '../../graphql/mutation/post-create'
 import { QUERY_ALL_POSTS } from '../../graphql/query/post/posts'
 import { Post } from '../../graphql/types/post'
+import { ScreenAlert } from '../alert'
 
 export const Home = () => {
   const [newPost, setNewPost] = useState<string>('')
+  const [errorMessage, setErrorMessage] = useState<string>('')
   const { loggedUser } = useContext(AuthenticationContext)
   const { data, refetch } = useQuery<{ posts: Post[] }>(QUERY_ALL_POSTS)
   const handleSubmit = async () => {
@@ -27,7 +29,7 @@ export const Home = () => {
       setNewPost('')
       refetch()
     } catch (error) {
-      console.error(error)
+      error instanceof Error && setErrorMessage(error.message)
     }
   }
   return (
@@ -98,6 +100,11 @@ export const Home = () => {
           )}
         </Stack >
       </Box>
+      <ScreenAlert
+        message={errorMessage}
+        onClose={setErrorMessage}
+        severity='error'
+      />
     </Box>
   )
 }
