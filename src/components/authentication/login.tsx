@@ -23,6 +23,7 @@ export const Login = () => {
 
   const [loading, setLoading] = useState<boolean>(false)
   const [successMessage, setSuccessMessage] = useState<string>('')
+  const [errorMessage, setErrorMessage] = useState<string>('')
   const { signIn } = useContext(AuthenticationContext)
   const handleSubmit = async (values: typeof initialValues) => {
     try {
@@ -31,7 +32,7 @@ export const Login = () => {
       return setLoading(false)
     } catch (error) {
       setLoading(false)
-      console.error(error)
+      error instanceof Error && setErrorMessage(error.message)
     }
   }
   return (
@@ -122,6 +123,11 @@ export const Login = () => {
         message={successMessage}
         onClose={setSuccessMessage}
         severity='success'
+      />
+      <ScreenAlert
+        message={errorMessage}
+        onClose={setErrorMessage}
+        severity='error'
       />
     </Box >
   )

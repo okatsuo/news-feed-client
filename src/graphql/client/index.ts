@@ -3,7 +3,7 @@ import { setContext } from '@apollo/client/link/context';
 import { AppStorage } from '../../utils/appStorages';
 import { createUploadLink } from 'apollo-upload-client';
 
-const link = createUploadLink({uri: 'http://localhost:5566/graphql'})
+const link = createUploadLink({ uri: process.env.API_KEY })
 
 const authLink = setContext((_, { headers }) => {
   const token = localStorage.getItem(AppStorage.user_token);
