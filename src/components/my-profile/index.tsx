@@ -1,5 +1,5 @@
-import { AddAPhotoOutlined, ArrowBack, UploadFile } from '@mui/icons-material'
-import { Alert, Avatar, Badge, Box, Button, IconButton, Snackbar, Stack, TextField, Typography } from '@mui/material'
+import { AddAPhotoOutlined } from '@mui/icons-material'
+import { Avatar, Badge, Box, Button, IconButton, TextField, Typography } from '@mui/material'
 import { Form, Formik } from 'formik'
 import { useContext, useState } from 'react'
 import { AuthenticationContext } from '../../context/authentication'
@@ -10,6 +10,7 @@ import { MUTATION_USER_UPDATE } from '../../graphql/mutation/user-update'
 import Router from 'next/router'
 import { User } from '../../graphql/types/user'
 import { ScreenAlert } from '../alert'
+import { LoadingButton } from '@mui/lab'
 
 const schema = Yup.object().shape({
   name: Yup.string().required('Nome é necessário')
@@ -21,6 +22,7 @@ export const MyProfile = () => {
   const [userPicture, setUserPicture] = useState<{ picture: File, pictureUrl: string } | null>(null)
   const [errorMessage, setErrorMessage] = useState<string>('')
   const [successMessage, setSuccessMessage] = useState<string>('')
+  const [loading, setLoading] = useState<boolean>(false)
   const { loggedUser, setLoggedUser } = useContext(AuthenticationContext)
 
   if (!loggedUser) return <div>loading</div>;
@@ -42,6 +44,7 @@ export const MyProfile = () => {
   }
 
   const handleSubmit = async (values: typeof initialValues) => {
+    setLoading(true)
     try {
       const { data } = await apolloClient.mutate<{ userUpdate: User }>({
         mutation: MUTATION_USER_UPDATE,
@@ -54,8 +57,10 @@ export const MyProfile = () => {
         }
       })
       data?.userUpdate && setLoggedUser(data.userUpdate)
+      setLoading(false)
       setSuccessMessage('Alteração salva com sucesso!')
     } catch (error) {
+      setLoading(false)
       error instanceof Error && setErrorMessage(error.message)
     }
   }
@@ -134,7 +139,14 @@ export const MyProfile = () => {
                 />
                 <Box display='flex' justifyContent='space-evenly' mt={1}>
                   <Button color='error' variant='contained' onClick={handleCancel}>Cancelar</Button>
-                  <Button color='primary' variant='contained' type='submit'>Salvar</Button>
+                  <LoadingButton
+                    loading={loading}
+                    color='primary'
+                    variant='contained'
+                    type='submit'
+                  >
+                    Salvar
+                  </LoadingButton>
                 </Box>
               </Form>
             )}
