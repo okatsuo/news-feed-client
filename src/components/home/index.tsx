@@ -9,12 +9,13 @@ import { MUTATION_POST_CREATE } from '../../graphql/mutation/post-create'
 import { QUERY_ALL_POSTS } from '../../graphql/query/post/posts'
 import { Post } from '../../graphql/types/post'
 import { ScreenAlert } from '../alert'
+import * as Styles from './styles'
 
 export const Home = () => {
   const [newPost, setNewPost] = useState<string>('')
   const [errorMessage, setErrorMessage] = useState<string>('')
   const { loggedUser } = useContext(AuthenticationContext)
-  const { data, refetch } = useQuery<{ posts: Post[] }>(QUERY_ALL_POSTS)
+  const { data, refetch, loading } = useQuery<{ posts: Post[] }>(QUERY_ALL_POSTS)
   const handleSubmit = async () => {
     if (!newPost) return
     try {
@@ -33,21 +34,16 @@ export const Home = () => {
     }
   }
   return (
-    <Box
-      display={'flex'}
-      alignItems={'center'}
-      flexDirection={'column'}
-      my={2}
-    >
-      <Box width={420}>
-        <Paper elevation={3} sx={{ py: 1, px: 1, mb: 2 }} square>
+    <Styles.Wrapper>
+      <Styles.Container>
+        <Styles.PublishPost elevation={3} square>
           <Typography variant='subtitle2'>Compartilhe com o mundo</Typography>
           <TextField
             value={newPost}
             type='text'
             margin='dense'
             size='small'
-            placeholder={`No que você está pensando hoje ? ${loggedUser?.name}`}
+            placeholder={`No que você está pensando hoje ? ${loggedUser?.name.split(' ')[0]}`}
             fullWidth
             onChange={({ target }) => setNewPost(target.value)}
             onKeyUp={({ key }) => key === 'Enter' && handleSubmit()}
@@ -61,50 +57,50 @@ export const Home = () => {
               )
             }}
           />
-        </Paper>
+        </Styles.PublishPost>
         <Stack
           spacing={1}
           alignItems={'center'}
         >
-          {data?.posts.length ? data.posts.map((post, index: number) => (
-            <Paper key={index} variant='outlined' sx={{ width: '100%' }}>
-              <Box px={2} py={1} >
-                <Box display='flex' flexDirection='row'>
-                  <Avatar src={post.user.picture}>{post.user.name.charAt(0)}</Avatar>
-                  <Box ml={2}>
-                    <Typography>
-                      <b>{post.user.name}</b>
-                    </Typography>
+          {
+            !loading &&
+            data?.posts.length &&
+            data.posts.map((post, index: number) => (
+              <Paper key={index} variant='outlined' sx={{ width: '100%' }}>
+                <Box px={2} py={1} >
+                  <Box display='flex' flexDirection='row'>
+                    <Avatar src={post.user.picture}>{post.user.name.charAt(0)}</Avatar>
+                    <Box ml={2}>
+                      <Typography>
+                        <b>{post.user.name}</b>
+                      </Typography>
 
-                    <Typography
-                      variant='body2'>
-                      em: {new Date(post.created_at).toLocaleString()}
-                    </Typography>
-                    <br />
+                      <Typography
+                        variant='body2'>
+                        em: {new Date(post.created_at).toLocaleString()}
+                      </Typography>
+                      <br />
+                    </Box>
                   </Box>
+                  <Typography>
+                    {post.text}
+                  </Typography>
                 </Box>
-                <Typography>
-                  {post.text}
-                </Typography>
-              </Box>
 
 
-              {post.imageUrl &&
-                <img src={post.imageUrl} alt="" width='100%' property='lazy' />
-              }
-            </Paper>
-          )) : (
-            <Typography>
-              Seja o primeiro a publicar 🔥
-            </Typography>
-          )}
+                {post.imageUrl &&
+                  <Styles.Image src={post.imageUrl} alt='post image' />
+                }
+              </Paper>
+            ))
+          }
         </Stack >
-      </Box>
+      </Styles.Container>
       <ScreenAlert
         message={errorMessage}
         onClose={setErrorMessage}
         severity='error'
       />
-    </Box>
+    </Styles.Wrapper>
   )
 }
