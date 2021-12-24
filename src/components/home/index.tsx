@@ -51,9 +51,11 @@ export const Home = () => {
             onKeyUp={({ key }) => key === 'Enter' && handleSubmit()}
             InputProps={{
               endAdornment: (
-                <InputAdornment position='end'>
-                  <Send color='primary' />
-                </InputAdornment>
+                <Box onClick={handleSubmit} sx={{ cursor: 'pointer' }}>
+                  <InputAdornment position='end'>
+                    <Send color='primary' />
+                  </InputAdornment>
+                </Box>
               )
             }}
           />
