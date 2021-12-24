@@ -8,6 +8,8 @@ import { useState } from 'react'
 import { apolloClient } from '../../graphql/client'
 import { MUTATION_USER_CREATE } from '../../graphql/mutation/user-create'
 import { AppRoutes } from '../../utils/appRoutes'
+import { ScreenAlert } from '../alert'
+import * as Yup from 'yup'
 
 const initialValues = {
   email: '',
@@ -15,8 +17,15 @@ const initialValues = {
   name: ''
 }
 
+const schema = Yup.object().shape({
+  email: Yup.string().email(),
+  password: Yup.string().min(4, 'A senha deve ter mais que 3 dígitos'),
+  name: Yup.string().min(3, 'Nome deve ter no mínimo 3 caracteres')
+})
+
 export const Register = () => {
   const [loading, setLoading] = useState<boolean>(false)
+  const [errorMessage, setErrorMessage] = useState<string>('')
   const handleSubmit = async (values: typeof initialValues) => {
     try {
       setLoading(true)
@@ -28,7 +37,7 @@ export const Register = () => {
       Router.push(AppRoutes.home)
     } catch (error) {
       setLoading(false)
-      console.error(error)
+      error instanceof Error && setErrorMessage(error.message)
     }
   }
   return (
@@ -64,8 +73,9 @@ export const Register = () => {
       <Formik
         initialValues={initialValues}
         onSubmit={handleSubmit}
+        validationSchema={schema}
       >
-        {({ handleChange }) => (
+        {({ handleChange, errors }) => (
           <Form>
             <Box sx={{ display: 'flex', flexDirection: 'column', width: '300px' }}>
               <TextField
@@ -74,6 +84,7 @@ export const Register = () => {
                 type='text'
                 margin='normal'
                 onChange={handleChange}
+                helperText={errors.name}
                 required
                 InputProps={{
                   startAdornment: (
@@ -90,6 +101,7 @@ export const Register = () => {
                 type='email'
                 margin='normal'
                 onChange={handleChange}
+                helperText={errors.email}
                 required
                 InputProps={{
                   startAdornment: (
@@ -106,6 +118,7 @@ export const Register = () => {
                 type='password'
                 margin='normal'
                 onChange={handleChange}
+                helperText={errors.password}
                 required
                 InputProps={{
                   startAdornment: (
@@ -131,6 +144,11 @@ export const Register = () => {
           Ou entre com <Link href={AppRoutes.home}>sua conta</Link>.
         </Typography>
       </Box>
+      <ScreenAlert
+        message={errorMessage}
+        onClose={setErrorMessage}
+        severity='error'
+      />
     </Box >
   )
 }
