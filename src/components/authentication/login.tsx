@@ -3,9 +3,11 @@ import { LoadingButton } from '@mui/lab'
 import { Box, IconButton, InputAdornment, TextField, Tooltip, Typography } from '@mui/material'
 import { Form, Formik } from 'formik'
 import Link from 'next/link'
-import { useContext, useState } from 'react'
+import Router from 'next/router'
+import { useContext, useEffect, useState } from 'react'
 import { AuthenticationContext } from '../../context/authentication'
 import { AppRoutes } from '../../utils/appRoutes'
+import { ScreenAlert } from '../alert'
 
 const initialValues = {
   email: '',
@@ -13,7 +15,14 @@ const initialValues = {
 }
 
 export const Login = () => {
+
+  useEffect(() => {
+    const query = Router.query
+    query?.new_account == '1' && setSuccessMessage('Conta criada com sucesso!')
+  }, [])
+
   const [loading, setLoading] = useState<boolean>(false)
+  const [successMessage, setSuccessMessage] = useState<string>('')
   const { signIn } = useContext(AuthenticationContext)
   const handleSubmit = async (values: typeof initialValues) => {
     try {
@@ -109,6 +118,11 @@ export const Login = () => {
           Ou crie uma <Link href={AppRoutes.register}>nova conta</Link>.
         </Typography>
       </Box>
+      <ScreenAlert
+        message={successMessage}
+        onClose={setSuccessMessage}
+        severity='success'
+      />
     </Box >
   )
 }

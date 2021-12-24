@@ -34,7 +34,10 @@ export const Register = () => {
         variables: values
       })
       setLoading(false)
-      Router.push(AppRoutes.home)
+      Router.push({
+        pathname: AppRoutes.home,
+        query: { new_account: 1 }
+      })
     } catch (error) {
       setLoading(false)
       error instanceof Error && setErrorMessage(error.message)
