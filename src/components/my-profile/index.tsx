@@ -1,5 +1,5 @@
 import { AddAPhotoOutlined, ArrowBack, UploadFile } from '@mui/icons-material'
-import { Avatar, Badge, Box, Button, IconButton, TextField, Typography } from '@mui/material'
+import { Alert, Avatar, Badge, Box, Button, IconButton, Snackbar, Stack, TextField, Typography } from '@mui/material'
 import { Form, Formik } from 'formik'
 import { useContext, useState } from 'react'
 import { AuthenticationContext } from '../../context/authentication'
@@ -9,6 +9,7 @@ import { apolloClient } from '../../graphql/client'
 import { MUTATION_USER_UPDATE } from '../../graphql/mutation/user-update'
 import Router from 'next/router'
 import { User } from '../../graphql/types/user'
+import { ScreenAlert } from '../alert'
 
 const schema = Yup.object().shape({
   name: Yup.string().required('Nome é necessário')
@@ -18,6 +19,8 @@ const fiveMegabyteInKilobyte = 5000000
 
 export const MyProfile = () => {
   const [userPicture, setUserPicture] = useState<{ picture: File, pictureUrl: string } | null>(null)
+  const [errorMessage, setErrorMessage] = useState<string>('')
+  const [successMessage, setSuccessMessage] = useState<string>('')
   const { loggedUser, setLoggedUser } = useContext(AuthenticationContext)
 
   if (!loggedUser) return <div>loading</div>;
@@ -27,11 +30,14 @@ export const MyProfile = () => {
   }
 
   const handleImageChange = (files: FileList) => {
-    const allowedFiles = ['image/png', 'image/jpeg']
-    if (!allowedFiles.includes(files[0].type)) return console.error('Arquivo não permitido')
-    if (files[0].size > fiveMegabyteInKilobyte) return console.error('Foto muito grande, máximo 5 MB.')
     const picture = files[0]
+
+    const allowedFiles = ['image/png', 'image/jpeg']
+    if (!allowedFiles.includes(picture.type)) return setErrorMessage('Arquivo não permitido')
+    if (picture.size > fiveMegabyteInKilobyte) return setErrorMessage('Foto muito grande, máximo 5 MB.')
+
     const pictureUrl = URL.createObjectURL(picture)
+
     setUserPicture({ picture, pictureUrl })
   }
 
@@ -48,8 +54,9 @@ export const MyProfile = () => {
         }
       })
       data?.userUpdate && setLoggedUser(data.userUpdate)
+      setSuccessMessage('Alteração salva com sucesso!')
     } catch (error) {
-      console.error(error)
+      error instanceof Error && setErrorMessage(error.message)
     }
   }
 
@@ -134,6 +141,16 @@ export const MyProfile = () => {
           </Formik>
         </Box>
       </Box>
+      <ScreenAlert
+        message={successMessage}
+        onClose={setSuccessMessage}
+        severity='success'
+      />
+      <ScreenAlert
+        message={errorMessage}
+        onClose={setErrorMessage}
+        severity='error'
+      />
     </Box >
   )
 }
