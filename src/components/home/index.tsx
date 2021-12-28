@@ -1,8 +1,8 @@
 import { useQuery } from '@apollo/client'
-import { Send } from '@mui/icons-material'
-import { Avatar, InputAdornment, Paper, Stack, TextField, Typography } from '@mui/material'
+import { DeleteForever, Link, MoreHoriz, Report, Send, VisibilityOff } from '@mui/icons-material'
+import { Avatar, Divider, IconButton, InputAdornment, Menu, MenuItem, Paper, Stack, TextField, Tooltip, Typography } from '@mui/material'
 import { Box } from '@mui/system'
-import { useContext, useState } from 'react'
+import { MouseEvent, useContext, useState } from 'react'
 import { AuthenticationContext } from '../../context/authentication'
 import { apolloClient } from '../../graphql/client'
 import { MUTATION_POST_CREATE } from '../../graphql/mutation/post-create'
@@ -13,6 +13,16 @@ import * as Styles from './styles'
 
 export const Home = () => {
   const [newPost, setNewPost] = useState<string>('')
+
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const open = Boolean(anchorEl);
+  const handleClick = (event: MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
   const [errorMessage, setErrorMessage] = useState<string>('')
   const { loggedUser } = useContext(AuthenticationContext)
   const { data, refetch, loading } = useQuery<{ posts: Post[] }>(QUERY_ALL_POSTS)
@@ -63,39 +73,71 @@ export const Home = () => {
           alignItems={'center'}
         >
           {
-            !loading &&
-            data?.posts.length &&
-            data.posts.map((post, index: number) => (
+            data?.posts.length && data.posts.map((post, index: number) => (
               <Paper key={index} variant='outlined' sx={{ width: '100%' }}>
                 <Box px={2} py={1} >
-                  <Box display='flex' flexDirection='row'>
-                    <Avatar src={post.user.picture}>{post.user.name.charAt(0)}</Avatar>
-                    <Box ml={2}>
-                      <Typography>
-                        <b>{post.user.name}</b>
-                      </Typography>
+                  <Box display='flex' justifyContent='space-between'>
+                    <Box display='flex' flexDirection='row'>
+                      <Avatar src={post.user.picture}>{post.user.name.charAt(0)}</Avatar>
+                      <Box ml={2}>
+                        <Typography>
+                          <b>{post.user.name}</b>
+                        </Typography>
 
-                      <Typography
-                        variant='body2'>
-                        em: {new Date(post.created_at).toLocaleString()}
-                      </Typography>
-                      <br />
+                        <Typography
+                          variant='body2'>
+                          em: {new Date(post.created_at).toLocaleString()}
+                        </Typography>
+                        <br />
+                      </Box>
+                    </Box>
+                    <Box>
+                      <Tooltip title='Abrir opções da publicação' >
+                        <IconButton onClick={handleClick}>
+                          <MoreHoriz />
+                        </IconButton>
+                      </Tooltip>
                     </Box>
                   </Box>
                   <Typography>
                     {post.text}
                   </Typography>
                 </Box>
-
-
                 {post.imageUrl &&
                   <Styles.Image src={post.imageUrl} alt='post image' />
                 }
               </Paper>
             ))
           }
-        </Stack >
+        </Stack>
       </Styles.Container>
+      <Menu
+        anchorEl={anchorEl}
+        onClose={handleClose}
+        onClick={handleClose}
+        open={open}
+        PaperProps={{
+          elevation: 5
+        }}
+      >
+        <MenuItem>
+          <Link color='action' />
+          <Typography ml={1}>Copiar link da publicação</Typography>
+        </MenuItem>
+        <MenuItem>
+          <VisibilityOff color='action' />
+          <Typography ml={1}>Não quero ver isso</Typography>
+        </MenuItem>
+        <Divider color={'lightgrey'} variant='middle' />
+        <MenuItem>
+          <DeleteForever color='action' />
+          <Typography ml={1}>Deletar</Typography>
+        </MenuItem>
+        <MenuItem>
+          <Report color='action' />
+          <Typography ml={1}>Reportar</Typography>
+        </MenuItem>
+      </Menu>
       <ScreenAlert
         message={errorMessage}
         onClose={setErrorMessage}
