@@ -16,8 +16,11 @@ import * as Styles from './styles'
 export const Home = () => {
   const [newPost, setNewPost] = useState<string>('')
   const [selectedPost, setSelecetedPost] = useState<{ userId: string, postId: string } | null>(null)
-
+  const [errorMessage, setErrorMessage] = useState<string>('')
+  const [successMessage, setSuccessMessage] = useState<string>('')
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const { loggedUser } = useContext(AuthenticationContext)
+
   const open = Boolean(anchorEl);
   const handleClick = (event: MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -26,9 +29,6 @@ export const Home = () => {
     setAnchorEl(null);
   };
 
-  const [errorMessage, setErrorMessage] = useState<string>('')
-  const [successMessage, setSuccessMessage] = useState<string>('')
-  const { loggedUser } = useContext(AuthenticationContext)
   const { data, refetch, loading } = useQuery<{ posts: Post[] }>(QUERY_ALL_POSTS)
   const handleSubmit = async () => {
     if (!newPost) return
@@ -47,7 +47,6 @@ export const Home = () => {
       error instanceof Error && setErrorMessage(error.message)
     }
   }
-
 
   const MenuOptions = () => {
     const AdminOptions = () => {
