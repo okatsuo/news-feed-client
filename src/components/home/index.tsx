@@ -27,6 +27,7 @@ export const Home = () => {
   };
 
   const [errorMessage, setErrorMessage] = useState<string>('')
+  const [successMessage, setSuccessMessage] = useState<string>('')
   const { loggedUser } = useContext(AuthenticationContext)
   const { data, refetch, loading } = useQuery<{ posts: Post[] }>(QUERY_ALL_POSTS)
   const handleSubmit = async () => {
@@ -95,6 +96,7 @@ export const Home = () => {
         mutation: MUTATION_POST_DELETE,
         variables: { postId }
       })
+      setSuccessMessage('Publicação deletada com sucesso.')
       refetch()
     } catch (error) {
       error instanceof Error && setErrorMessage(error.message)
@@ -187,6 +189,11 @@ export const Home = () => {
         message={errorMessage}
         onClose={setErrorMessage}
         severity='error'
+      />
+      <ScreenAlert
+        message={successMessage}
+        onClose={setSuccessMessage}
+        severity='success'
       />
     </Styles.Wrapper>
   )
