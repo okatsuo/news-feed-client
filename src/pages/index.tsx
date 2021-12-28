@@ -8,6 +8,9 @@ import { AuthenticationContext } from '../context/authentication'
 
 const HomePage: NextPage = () => {
   const { isAuthenticated, authenticationLoading } = useContext(AuthenticationContext)
+
+  if (authenticationLoading) return <></>
+
   return isAuthenticated()
     ? <Layout><Home /></Layout>
     : <Login />

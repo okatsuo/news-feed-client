@@ -33,7 +33,10 @@ export const AuthenticationProvider = ({ children }: AuthenticationProviderProps
   useEffect(() => {
     setAuthenticationLoading(true)
     const userToken = localStorage.getItem(AppStorage.user_token)
-    if (!userToken) return logout()
+    if (!userToken) {
+      setAuthenticationLoading(false)
+      return logout()
+    }
 
     apolloClient.query<{ userProfile: User }>({
       query: QUERY_USER_PROFILE,

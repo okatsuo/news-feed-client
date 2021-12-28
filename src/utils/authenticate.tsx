@@ -1,5 +1,6 @@
 import Router from 'next/router'
 import { ReactNode, useContext } from 'react'
+import { Login } from '../components/authentication/login'
 import { AuthenticationContext } from '../context/authentication'
 
 type AuthenticateUser = {
@@ -7,15 +8,16 @@ type AuthenticateUser = {
 }
 
 export const AuthenticateUser = ({ children }: AuthenticateUser) => {
-  const { isAuthenticated } = useContext(AuthenticationContext)
-  const authenticated = isAuthenticated()
+  const { isAuthenticated, authenticationLoading } = useContext(AuthenticationContext)
 
-  if (!authenticated) {
-    Router.push('/')
-  }
+  if (authenticationLoading) return <></>
+
+  const authenticated = isAuthenticated()
+  !authenticated && Router.push('/')
+
   return (
     <span>
-      {authenticated && { children }}
+      {authenticated && children}
     </span>
   )
 }
