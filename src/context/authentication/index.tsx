@@ -21,7 +21,7 @@ type AuthenticationContextProps = {
   setLoggedUser: (values: User | null) => void
   signIn: (values: UserAuthentication) => Promise<void>
   logout: () => void
-  hasToken: () => boolean
+  isAuthenticated: () => boolean
 }
 
 export const AuthenticationContext = createContext<AuthenticationContextProps>({} as AuthenticationContextProps)
@@ -63,7 +63,8 @@ export const AuthenticationProvider = ({ children }: AuthenticationProviderProps
     setLoggedUser(login.user)
   }
 
-  const hasToken = (): boolean => !!localStorage.getItem(AppStorage.user_token)
+  const isAuthenticated = (): boolean => !!localStorage.getItem(AppStorage.user_token) && !!loggedUser
+
   return (
     <AuthenticationContext.Provider
       value={{
@@ -72,7 +73,7 @@ export const AuthenticationProvider = ({ children }: AuthenticationProviderProps
         setLoggedUser,
         signIn,
         logout,
-        hasToken
+        isAuthenticated
       }}>
       {children}
     </AuthenticationContext.Provider>

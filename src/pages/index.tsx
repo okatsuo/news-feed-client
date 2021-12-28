@@ -1,4 +1,3 @@
-import { NoSsr } from '@mui/material'
 import type { NextPage } from 'next'
 import { useContext } from 'react'
 import { Login } from '../components/authentication/login'
@@ -8,16 +7,10 @@ import { AuthenticationContext } from '../context/authentication'
 
 
 const HomePage: NextPage = () => {
-  const { hasToken, authenticationLoading } = useContext(AuthenticationContext)
-  return hasToken()
-    ? (
-      <Layout>
-        <Home />
-      </Layout>
-    )
-    : (
-      <Login />
-    )
+  const { isAuthenticated, authenticationLoading } = useContext(AuthenticationContext)
+  return isAuthenticated()
+    ? <Layout><Home /></Layout>
+    : <Login />
 }
 
 export default HomePage
