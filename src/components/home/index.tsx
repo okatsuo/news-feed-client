@@ -6,6 +6,7 @@ import { MouseEvent, useContext, useState } from 'react'
 import { AuthenticationContext } from '../../context/authentication'
 import { apolloClient } from '../../graphql/client'
 import { MUTATION_POST_CREATE } from '../../graphql/mutation/post-create'
+import { MUTATION_POST_DELETE } from '../../graphql/mutation/post-delete'
 import { QUERY_ALL_POSTS } from '../../graphql/query/post/posts'
 import { Post } from '../../graphql/types/post'
 import { UserRole } from '../../graphql/types/user-role'
@@ -14,7 +15,7 @@ import * as Styles from './styles'
 
 export const Home = () => {
   const [newPost, setNewPost] = useState<string>('')
-  const [postOptions, setPostOptions] = useState<string>('')
+  const [selectedPost, setSelecetedPost] = useState<{ userId: string, postId: string } | null>(null)
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
@@ -50,7 +51,7 @@ export const Home = () => {
   const MenuOptions = () => {
     const AdminOptions = () => {
       return (
-        <MenuItem>
+        <MenuItem onClick={() => deletePost(selectedPost?.postId)}>
           <DeleteForever color='action' />
           <Typography ml={1}>Deletar</Typography>
         </MenuItem>
@@ -58,8 +59,8 @@ export const Home = () => {
     }
     const UserOptions = () => {
       return (
-        postOptions === loggedUser?.id
-          ? <MenuItem>
+        selectedPost?.userId === loggedUser?.id
+          ? <MenuItem onClick={() => deletePost(selectedPost?.postId)}>
             <DeleteForever color='action' />
             <Typography ml={1}>Deletar</Typography>
           </MenuItem>
@@ -85,6 +86,19 @@ export const Home = () => {
         </MenuItem>
       </>
     )
+  }
+
+  const deletePost = async (postId?: string) => {
+    if (!postId) return;
+    try {
+      await apolloClient.mutate({
+        mutation: MUTATION_POST_DELETE,
+        variables: { postId }
+      })
+      refetch()
+    } catch (error) {
+      error instanceof Error && setErrorMessage(error.message)
+    }
   }
 
   return (
@@ -139,7 +153,7 @@ export const Home = () => {
                       <Tooltip title='Abrir opções da publicação' >
                         <IconButton onClick={(event) => {
                           handleClick(event);
-                          setPostOptions(post.user.id)
+                          setSelecetedPost({ userId: post.user.id, postId: post.id })
                         }}>
                           <MoreHoriz />
                         </IconButton>
