@@ -1,8 +1,9 @@
 import { useQuery } from '@apollo/client'
 import { DeleteForever, Link, MoreHoriz, Report, Send, VisibilityOff } from '@mui/icons-material'
-import { Avatar, Divider, IconButton, InputAdornment, Menu, MenuItem, Paper, Stack, TextField, Tooltip, Typography } from '@mui/material'
+import { Avatar, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Divider, IconButton, InputAdornment, Menu, MenuItem, Paper, Stack, TextField, Tooltip, Typography } from '@mui/material'
 import { Box } from '@mui/system'
 import { MouseEvent, useContext, useState } from 'react'
+import { boolean } from 'yup/lib/locale'
 import { AuthenticationContext } from '../../context/authentication'
 import { apolloClient } from '../../graphql/client'
 import { MUTATION_POST_CREATE } from '../../graphql/mutation/post-create'
@@ -19,9 +20,11 @@ export const Home = () => {
   const [errorMessage, setErrorMessage] = useState<string>('')
   const [successMessage, setSuccessMessage] = useState<string>('')
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [isOpenDialog, setIsOpenDialog] = useState<boolean>(false)
   const { loggedUser } = useContext(AuthenticationContext)
 
   const open = Boolean(anchorEl);
+
   const handleClick = (event: MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   };
@@ -51,7 +54,7 @@ export const Home = () => {
   const MenuOptions = () => {
     const AdminOptions = () => {
       return (
-        <MenuItem onClick={() => deletePost(selectedPost?.postId)}>
+        <MenuItem onClick={() => setIsOpenDialog(true)}>
           <DeleteForever color='action' />
           <Typography ml={1}>Deletar</Typography>
         </MenuItem>
@@ -173,6 +176,22 @@ export const Home = () => {
           }
         </Stack>
       </Styles.Container>
+
+      <Dialog open={isOpenDialog} onClose={() => setIsOpenDialog(false)}>
+        <DialogTitle>Apagar publicação</DialogTitle>
+        <DialogContent>
+          <Typography color='red'>Cuidado!</Typography>
+          Tem certeza que deseja apagar essa publicação ?
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setIsOpenDialog(false)}>Cancelar</Button>
+          <Button onClick={() => {
+            deletePost(selectedPost?.postId)
+            setIsOpenDialog(false)
+          }}>Tenho certeza!</Button>
+        </DialogActions>
+      </Dialog>
+
       <Menu
         anchorEl={anchorEl}
         onClose={handleClose}
