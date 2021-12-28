@@ -8,11 +8,13 @@ import { apolloClient } from '../../graphql/client'
 import { MUTATION_POST_CREATE } from '../../graphql/mutation/post-create'
 import { QUERY_ALL_POSTS } from '../../graphql/query/post/posts'
 import { Post } from '../../graphql/types/post'
+import { UserRole } from '../../graphql/types/user-role'
 import { ScreenAlert } from '../alert'
 import * as Styles from './styles'
 
 export const Home = () => {
   const [newPost, setNewPost] = useState<string>('')
+  const [postOptions, setPostOptions] = useState<string>('')
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
@@ -43,6 +45,48 @@ export const Home = () => {
       error instanceof Error && setErrorMessage(error.message)
     }
   }
+
+
+  const MenuOptions = () => {
+    const AdminOptions = () => {
+      return (
+        <MenuItem>
+          <DeleteForever color='action' />
+          <Typography ml={1}>Deletar</Typography>
+        </MenuItem>
+      )
+    }
+    const UserOptions = () => {
+      return (
+        postOptions === loggedUser?.id
+          ? <MenuItem>
+            <DeleteForever color='action' />
+            <Typography ml={1}>Deletar</Typography>
+          </MenuItem>
+          : null
+      )
+    }
+
+    return (
+      <>
+        <MenuItem>
+          <Link color='action' />
+          <Typography ml={1}>Copiar link da publicação</Typography>
+        </MenuItem>
+        <MenuItem>
+          <VisibilityOff color='action' />
+          <Typography ml={1}>Não quero ver isso</Typography>
+        </MenuItem>
+        <Divider color={'lightgrey'} variant='middle' />
+        {loggedUser?.role === UserRole.admin ? <AdminOptions /> : <UserOptions />}
+        <MenuItem>
+          <Report color='action' />
+          <Typography ml={1}>Reportar</Typography>
+        </MenuItem>
+      </>
+    )
+  }
+
   return (
     <Styles.Wrapper>
       <Styles.Container>
@@ -93,7 +137,10 @@ export const Home = () => {
                     </Box>
                     <Box>
                       <Tooltip title='Abrir opções da publicação' >
-                        <IconButton onClick={handleClick}>
+                        <IconButton onClick={(event) => {
+                          handleClick(event);
+                          setPostOptions(post.user.id)
+                        }}>
                           <MoreHoriz />
                         </IconButton>
                       </Tooltip>
@@ -120,23 +167,7 @@ export const Home = () => {
           elevation: 5
         }}
       >
-        <MenuItem>
-          <Link color='action' />
-          <Typography ml={1}>Copiar link da publicação</Typography>
-        </MenuItem>
-        <MenuItem>
-          <VisibilityOff color='action' />
-          <Typography ml={1}>Não quero ver isso</Typography>
-        </MenuItem>
-        <Divider color={'lightgrey'} variant='middle' />
-        <MenuItem>
-          <DeleteForever color='action' />
-          <Typography ml={1}>Deletar</Typography>
-        </MenuItem>
-        <MenuItem>
-          <Report color='action' />
-          <Typography ml={1}>Reportar</Typography>
-        </MenuItem>
+        <MenuOptions />
       </Menu>
       <ScreenAlert
         message={errorMessage}
