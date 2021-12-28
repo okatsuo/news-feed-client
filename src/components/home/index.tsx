@@ -73,17 +73,17 @@ export const Home = () => {
 
     return (
       <>
-        <MenuItem>
+        <MenuItem disabled>
           <Link color='action' />
           <Typography ml={1}>Copiar link da publicação</Typography>
         </MenuItem>
-        <MenuItem>
+        <MenuItem disabled>
           <VisibilityOff color='action' />
           <Typography ml={1}>Não quero ver isso</Typography>
         </MenuItem>
         <Divider color={'lightgrey'} variant='middle' />
         {loggedUser?.role === UserRole.admin ? <AdminOptions /> : <UserOptions />}
-        <MenuItem>
+        <MenuItem disabled>
           <Report color='action' />
           <Typography ml={1}>Reportar</Typography>
         </MenuItem>
@@ -98,7 +98,7 @@ export const Home = () => {
         mutation: MUTATION_POST_DELETE,
         variables: { postId }
       })
-      setSuccessMessage('Publicação deletada com sucesso.')
+      setSuccessMessage('Publicação apagada com sucesso.')
       refetch()
     } catch (error) {
       error instanceof Error && setErrorMessage(error.message)
@@ -178,17 +178,24 @@ export const Home = () => {
       </Styles.Container>
 
       <Dialog open={isOpenDialog} onClose={() => setIsOpenDialog(false)}>
-        <DialogTitle>Apagar publicação</DialogTitle>
         <DialogContent>
-          <Typography color='red'>Cuidado!</Typography>
-          Tem certeza que deseja apagar essa publicação ?
+          <Typography><b>Tem certeza que deseja apagar essa publicação ?</b></Typography>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setIsOpenDialog(false)}>Cancelar</Button>
-          <Button onClick={() => {
-            deletePost(selectedPost?.postId)
-            setIsOpenDialog(false)
-          }}>Tenho certeza!</Button>
+          <Button 
+          variant='contained'
+            onClick={() => setIsOpenDialog(false)}
+          >
+            Cancelar
+          </Button>
+          <Button
+            variant='contained'
+            color='error'
+            onClick={() => {
+              deletePost(selectedPost?.postId)
+              setIsOpenDialog(false)
+            }}
+          >Apagar!</Button>
         </DialogActions>
       </Dialog>
 
